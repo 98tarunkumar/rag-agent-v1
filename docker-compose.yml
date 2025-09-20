@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  rag-api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - EMBEDDING_MODEL=nomic-embed-text
+      - CHAT_MODEL=llama3.2:3b
+      - CHROMA_URL=http://chromadb:8000
+      - COLLECTION_NAME=specialist-agent
+      - CONTEXT_WINDOW_LENGTH=10
+      - CONTEXT_MAX_TOKENS=4000
+    depends_on:
+      - ollama
+      - chromadb
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+    networks:
+      - rag-network
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=*
+    restart: unless-stopped
+    networks:
+      - rag-network
+    # Uncomment for GPU support (requires nvidia-docker)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  chromadb:
+    image: chromadb/chroma:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - chromadb_data:/chroma/chroma
+    environment:
+      - CHROMA_SERVER_HOST=0.0.0.0
+      - CHROMA_SERVER_HTTP_PORT=8000
+      - CHROMA_SERVER_AUTH_CREDENTIALS_FILE=/chroma/auth/credentials
+      - CHROMA_SERVER_AUTH_CREDENTIALS_PROVIDER=chromadb.auth.providers.HtpasswdConfigServerAuthCredentialsProvider
+    restart: unless-stopped
+    networks:
+      - rag-network
+
+  # Optional: Redis for caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - rag-network
+    command: redis-server --appendonly yes
+
+volumes:
+  ollama_data:
+    driver: local
+  chromadb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  rag-network:
+    driver: bridge

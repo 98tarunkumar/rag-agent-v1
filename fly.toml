@@ -1,0 +1,30 @@
+app = "rag-api"
+primary_region = "sjc"
+
+[build]
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3000"
+  OLLAMA_BASE_URL = "http://ollama:11434"
+  EMBEDDING_MODEL = "nomic-embed-text"
+  CHAT_MODEL = "llama3.2:3b"
+  CHROMA_URL = "http://chromadb:8000"
+  COLLECTION_NAME = "specialist-agent"
+  CONTEXT_WINDOW_LENGTH = "10"
+  CONTEXT_MAX_TOKENS = "4000"
+  ALLOWED_ORIGINS = "*"
+  CORS_ENABLED = "true"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

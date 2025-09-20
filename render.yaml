@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: rag-api
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: OLLAMA_BASE_URL
+        value: http://ollama:11434
+      - key: EMBEDDING_MODEL
+        value: nomic-embed-text
+      - key: CHAT_MODEL
+        value: llama3.2:3b
+      - key: CHROMA_URL
+        value: http://chromadb:8000
+      - key: COLLECTION_NAME
+        value: specialist-agent
+      - key: CONTEXT_WINDOW_LENGTH
+        value: 10
+      - key: CONTEXT_MAX_TOKENS
+        value: 4000
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: CORS_ENABLED
+        value: "true"
