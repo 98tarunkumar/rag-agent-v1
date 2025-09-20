@@ -2,9 +2,6 @@
 
 A Retrieval-Augmented Generation (RAG) application using Ollama and ChromaDB for document processing and question answering.
 
-## ✅ Error Fixed!
-
-The ES module error has been resolved. All files now use CommonJS syntax (`require`/`module.exports`) consistently.
 
 ## 🚀 Quick Start
 
